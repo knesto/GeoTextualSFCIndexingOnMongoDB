@@ -47,7 +47,7 @@ public class BoxRangeQueries {
     	  sbkewords.append("\""+keyword+"\""+",");
 	        rangesList.stream().forEach(i->{
 	            if(i.low() == i.high()){
-	                sb.append(" "+i.low()+keyword+",");
+	                sb.append(" "+i.low()+keyword+","); 
 	            }
 	            else{
 	                for(long k=i.low(); k<= i.high(); k++){
@@ -58,9 +58,19 @@ public class BoxRangeQueries {
       }   
         
         sb.deleteCharAt(sb.length()-1);
-      
-        return "{$match:{ $and: [{location: {$geoWithin:  { $box:  [ [ "+lon1+","+lat1+" ], [ "+lon2+", "+lat2+"  ] ]}}},{Text:{$in:[ "+sbkewords.toString()+"] }},{hilbert:{$in:["+sb.toString()+"]}}]}}";
-           		
+        //return "{$match:{hilbertindex:{$in:["+sb.toString()+"]}}}";
+        //return "{$match:{\"location.coordinates\": {$geoWithin:  { $box:  [ [ "+lon1+","+lat1+" ], [ "+lon2+", "+lat2+"  ] ]}} }}";
+        //return "{$match:{ location: { $geoWithin: { $geometry: { type : \"Polygon\" , coordinates: [ [ [ 23.757495, 37.987295 ], [23.766958, 37.987295], [ 10.2, 32.3 ],  [23.757495, 37.987295] ] ] } } } }}";
+
+       // return "{ $match: { $and: [  { location: { $geoWithin: { $geometry: { type : \"Polygon\" , coordinates: [ [ [ "+lon1+", "+lat1+" ], ["+lon2+", "+lat2+"], [ "+lon1+", "+lat1+"] ] ] } } } },{Text:{$in:[ "+sbkewords.toString()+"] }},{hilbertindex:{$in:["+sb.toString()+"]}}]}}";        
+        
+        //return "{$match:{ $and: [{\"location.coordinates\": {$geoWithin:  { $box:  [ [ "+lon1+","+lat1+" ], [ "+lon2+", "+lat2+"  ] ]}}},{Text:{$in:[ "+sbkewords.toString()+"] }}]}}";
+        //return "{$match:{ $and: [{\"location.coordinates\": {$geoWithin:  { $box:  [ [ "+lon1+","+lat1+" ], [ "+lon2+", "+lat2+"  ] ]}}},{$text:{$search:\"Cambodian Lebanese Persian\" }}]}}";
+        
+        return "{$match:{ $and: [{\"location.coordinates\": {$geoWithin:  { $box:  [ [ "+lon1+","+lat1+" ], [ "+lon2+", "+lat2+"  ] ]}}},{Text:{$in:[ "+sbkewords.toString()+"] }},{hilbertindex:{$in:["+sb.toString()+"]}}]}}";
+
+        
+  		
     }
     //get number of documents
     protected  String getDoucumentsCount(){
@@ -71,7 +81,7 @@ public class BoxRangeQueries {
     }
     // get number of groupids
     protected  String getDoucumentsCountWithGroupid(){
-        return "{ $group: { _id: \"$_id.groupid\", count: {$sum: \"$temp\"} } }";
+        return "{ $group: { _id: \"$_id.groupid\", count: {$sum: \"$temp\"} } }";  
     }
 
 }
